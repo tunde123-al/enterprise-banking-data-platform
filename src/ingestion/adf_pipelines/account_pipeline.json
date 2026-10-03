@@ -1,0 +1,55 @@
+{
+  "name": "pipeline_ingest_accounts",
+  "properties": {
+    "description": "Copy accounts from PostgreSQL Core Banking DB to ADLS Gen2 Bronze layer",
+    "activities": [
+      {
+        "name": "CopyAccountsToBronze",
+        "type": "Copy",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 30
+        },
+        "typeProperties": {
+          "source": {
+            "type": "PostgreSqlSource",
+            "query": "SELECT account_id, customer_id, account_type, currency, balance, status, opened_date, created_at FROM core_banking.accounts"
+          },
+          "sink": {
+            "type": "ParquetSink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings"
+            },
+            "formatSettings": {
+              "type": "ParquetWriteSettings"
+            }
+          },
+          "enableStaging": false
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_postgres_accounts",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_adls_bronze_accounts",
+            "type": "DatasetReference",
+            "parameters": {
+              "directory": "bronze/core_banking/accounts"
+            }
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      "ingestion",
+      "bronze",
+      "accounts",
+      "core_banking"
+    ]
+  }
+}

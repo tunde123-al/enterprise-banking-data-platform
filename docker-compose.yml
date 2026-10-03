@@ -1,0 +1,130 @@
+# =============================================================================
+# Enterprise Banking Data & Analytics Platform - local stack
+# Runs the five synthetic source systems, Apache Airflow and the FastAPI
+# operational microservice on Docker Desktop.
+#
+# Usage (from repository root):
+#   docker compose up -d --build
+#   docker compose ps
+#   docker compose logs -f airflow
+# =============================================================================
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-bank
+    environment:
+      POSTGRES_DB: core_banking
+      POSTGRES_USER: bankadmin
+      POSTGRES_PASSWORD: bankadmin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./src/data_generation/init-scripts/postgres:/docker-entrypoint-initdb.d
+    networks:
+      - bank-network
+
+  oracle:
+    # Oracle Free (gvenzl) avoids Oracle Container Registry login for the
+    # portfolio. init scripts in /container-entrypoint-initdb.d run on first start.
+    image: gvenzl/oracle-free:23-slim
+    container_name: oracle-bank
+    environment:
+      ORACLE_PASSWORD: oracle123
+      ORACLE_DATABASE: XEPDB1
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./src/data_generation/init-scripts/oracle:/container-entrypoint-initdb.d
+    networks:
+      - bank-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-bank
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "MyStrongPass123"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./src/data_generation/init-scripts/sqlserver:/docker-entrypoint-initdb.d
+    networks:
+      - bank-network
+
+  mongodb:
+    image: mongo:6
+    container_name: mongodb-bank
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+      - ./src/data_generation/init-scripts/mongodb:/docker-entrypoint-initdb.d:ro
+    networks:
+      - bank-network
+
+  cassandra:
+    image: cassandra:4
+    container_name: cassandra-bank
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: "BankCluster"
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+      - ./src/data_generation/init-scripts/cassandra:/docker-entrypoint-initdb.d:ro
+    networks:
+      - bank-network
+
+  airflow:
+    # Single-container Airflow (SequentialExecutor + SQLite) is sufficient for
+    # the portfolio. Production uses the managed Airflow in Azure (see
+    # docs/architecture/4-infrastructure-architecture.md).
+    image: apache/airflow:2.8.1
+    container_name: airflow-bank
+    command: standalone
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_FOLDER: /repo/src/ingestion/airflow_dags
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW_HOME: /opt/airflow
+    volumes:
+      - .:/repo
+    working_dir: /repo
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - oracle
+      - sqlserver
+      - mongodb
+      - cassandra
+    networks:
+      - bank-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: banking-api
+    environment:
+      API_ENVIRONMENT: local
+    ports:
+      - "8000:8000"
+    networks:
+      - bank-network
+
+networks:
+  bank-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  oracle-data:
+  sqlserver-data:
+  mongodb-data:
+  cassandra-data:

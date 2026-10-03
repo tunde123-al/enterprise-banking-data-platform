@@ -1,0 +1,5 @@
+flowchart TB
+ J[Databricks Workflow / job cluster] --> BR[Bronze Delta]
+ BR --> N1[PySpark cleanse + quarantine] --> SI[Silver Delta]
+ SI --> N2[Features / aggregates / Spark SQL] --> GO[Gold Delta]
+ J --> C[Checkpoint • audit • optimization]

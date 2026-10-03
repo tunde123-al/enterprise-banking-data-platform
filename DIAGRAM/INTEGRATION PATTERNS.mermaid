@@ -1,0 +1,40 @@
+flowchart TB
+    subgraph "SOURCE SYSTEMS"
+        S1[PostgreSQL<br/>Relational]
+        S2[Oracle<br/>Relational]
+        S3[SQL Server<br/>Relational]
+        S4[Azure SQL<br/>Relational]
+        S5[MongoDB<br/>Document]
+        S6[Cassandra<br/>Key-Value]
+        S7[FastAPI<br/>Event Stream]
+    end
+
+    subgraph "INTEGRATION METHODS"
+        M1[Batch Full Load<br/>Initial Historical]
+        M2[Batch Incremental<br/>Daily Updates]
+        M3[Streaming<br/>Real-Time Events]
+        M4[CDC<br/>Change Data Capture]
+    end
+
+    subgraph "INTEGRATION TECHNOLOGIES"
+        T1[ADF Copy Activity<br/>SQL-based Sources]
+        T2[ADF Data Flow<br/>Transform During Copy]
+        T3[Airflow Python Operator<br/>NoSQL Sources]
+        T4[Event Hub<br/>Stream Ingestion]
+        T5[Databricks Auto-Loader<br/>File-based Ingestion]
+    end
+
+    subgraph "TARGET"
+        TA[ADLS Gen2<br/>Bronze Layer]
+    end
+
+    S1 & S2 & S3 & S4 --> M1 & M2 & M4
+    S5 & S6 --> M1 & M2
+    S7 --> M3
+
+    M1 & M2 & M4 --> T1 & T2
+    M1 & M2 --> T3
+    M3 --> T4
+    M1 & M2 & M3 --> T5
+
+    T1 & T2 & T3 & T4 & T5 --> TA

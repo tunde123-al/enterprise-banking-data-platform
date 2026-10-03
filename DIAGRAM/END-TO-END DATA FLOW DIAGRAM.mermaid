@@ -1,0 +1,53 @@
+flowchart LR
+    subgraph "SOURCE SYSTEMS"
+        S1[PostgreSQL<br/>Core Banking]
+        S2[Oracle<br/>Legacy Banking]
+        S3[SQL Server<br/>Loan Ops]
+        S4[Azure SQL<br/>Modern App]
+        S5[MongoDB<br/>Interactions]
+        S6[Cassandra<br/>Events]
+    end
+
+    subgraph "INGESTION"
+        I1[ADF<br/>Copy Activity<br/>Full & Incremental]
+        I2[Airflow<br/>Python Operators<br/>Complex Logic]
+        I3[Event Hub<br/>Near-Real-Time<br/>Transactions]
+    end
+
+    subgraph "DATA LAKE - ADLS GEN2"
+        L1[<b>Bronze</b><br/>Raw Data<br/>Parquet/JSON]
+        L2[<b>Silver</b><br/>Cleansed Data<br/>Delta Tables]
+        L3[<b>Gold</b><br/>Curated Data<br/>Delta Tables]
+    end
+
+    subgraph "PROCESSING"
+        P1[Databricks<br/>PySpark<br/>Bronze → Silver]
+        P2[Databricks<br/>PySpark<br/>Silver → Gold]
+        P3[dbt<br/>Gold → Data Marts]
+    end
+
+    subgraph "ANALYTICS"
+        W1[Synapse<br/>Enterprise Warehouse]
+        B1[Power BI<br/>Semantic Model]
+        R1[Power BI<br/>Dashboards & Reports]
+    end
+
+    S1 & S2 & S3 & S4 --> I1
+    S5 & S6 --> I2
+    S1 & S2 & S3 & S4 & S5 & S6 --> I3
+
+    I1 --> L1
+    I2 --> L1
+    I3 --> L1
+
+    L1 --> P1
+    P1 --> L2
+
+    L2 --> P2
+    P2 --> L3
+
+    L3 --> P3
+    P3 --> W1
+
+    W1 --> B1
+    B1 --> R1

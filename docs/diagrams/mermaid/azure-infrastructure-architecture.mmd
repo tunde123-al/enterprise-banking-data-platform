@@ -1,0 +1,6 @@
+flowchart TB
+ SUB[Azure subscription] --> RG[Resource groups]
+ RG --> V[VNet + private endpoints]
+ RG --> D[ADF • ADLS • Databricks • Synapse • Azure SQL]
+ ID[Entra • managed identity • Key Vault] --- D
+ M[Azure Monitor • Log Analytics] --- D

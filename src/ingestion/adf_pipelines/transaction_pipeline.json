@@ -1,0 +1,65 @@
+{
+  "name": "pipeline_ingest_transactions",
+  "properties": {
+    "description": "Incremental partitioned copy of banking transactions to ADLS Gen2 Bronze layer",
+    "activities": [
+      {
+        "name": "CopyIncrementalTransactions",
+        "type": "Copy",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 30
+        },
+        "typeProperties": {
+          "source": {
+            "type": "PostgreSqlSource",
+            "query": "SELECT transaction_id, account_id, merchant_id, transaction_reference, amount, currency, transaction_type, transaction_category, transaction_date, balance_after, status, fee, tax FROM core_banking.transactions WHERE transaction_date >= '@{pipeline().parameters.WindowStart}' AND transaction_date < '@{pipeline().parameters.WindowEnd}'"
+          },
+          "sink": {
+            "type": "ParquetSink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings"
+            },
+            "formatSettings": {
+              "type": "ParquetWriteSettings"
+            }
+          },
+          "enableStaging": false
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_postgres_transactions",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_adls_bronze_transactions",
+            "type": "DatasetReference",
+            "parameters": {
+              "directory": "bronze/core_banking/transactions"
+            }
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "WindowStart": {
+        "type": "string",
+        "defaultValue": "2026-01-01T00:00:00Z"
+      },
+      "WindowEnd": {
+        "type": "string",
+        "defaultValue": "2026-01-02T00:00:00Z"
+      }
+    },
+    "annotations": [
+      "ingestion",
+      "bronze",
+      "transactions",
+      "incremental"
+    ]
+  }
+}

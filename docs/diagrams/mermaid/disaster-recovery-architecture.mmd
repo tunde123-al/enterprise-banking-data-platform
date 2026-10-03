@@ -1,0 +1,5 @@
+flowchart LR
+ F[Failure] --> A[Detect / alert] --> R[Retry or isolate]
+ R -->|data| D[Replay manifest / Delta version / backup]
+ R -->|platform| I[Redeploy IaC / artifacts]
+ D & I --> V[Reconcile + validate] --> N[Normal operation]

@@ -1,0 +1,38 @@
+# Local data and tooling
+data/generated/
+data_output/
+data/lakehouse/
+
+# dbt artifacts
+src/dbt/target/
+src/dbt/dbt_packages/
+src/dbt/logs/
+
+# Airflow local state
+airflow/
+
+# Environment and secrets
+.env
+local.settings.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Infrastructure
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Stale inventory artifact (regenerate with: dir /b /s > _filelist.txt)
+_filelist.txt

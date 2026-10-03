@@ -1,0 +1,5 @@
+flowchart LR
+ O[Banking sources] --> IN[ADF / Airflow] --> ADLS[ADLS landing & Bronze]
+ ADLS --> DBX[Databricks: Bronze → Silver → Gold]
+ DBX --> SYN[dbt / Synapse marts] --> PBI[Power BI]
+ SEC[Entra • Key Vault • RBAC • monitoring] --- IN & DBX & SYN

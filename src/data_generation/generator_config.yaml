@@ -1,0 +1,104 @@
+project:
+  name: "Enterprise Banking Data Platform"
+  version: "1.0.0"
+  seed: 42  # for reproducibility
+
+volumes:
+  customers: 200000           # 200k customers
+  accounts_per_customer: 5    # max 5 accounts per customer
+  accounts: 1000000           # ~1M accounts
+  transactions: 10000000      # 10M transactions
+  merchants: 5000
+  loans: 50000                # 1 per 4 customers
+  repayments_per_loan: 4      # average 4 repayments
+  cards: 50000                # 1 per 4 customers
+  interactions: 1000000       # 1M interactions
+  devices: 200000             # 1 per customer
+  cassandra_events: 5000000   # 5M events
+
+date_ranges:
+  start_date: "2020-01-01"
+  end_date: "2025-12-31"
+  loan_term_months: [12, 24, 36, 48, 60, 120, 180, 240, 360]
+  card_expiry_years: 5
+
+distributions:
+  account_type:
+    checking: 0.40
+    savings: 0.35
+    money_market: 0.10
+    cd: 0.10
+    ira: 0.05
+  transaction_type:
+    withdrawal: 0.30
+    deposit: 0.25
+    transfer: 0.20
+    payment: 0.15
+    fee: 0.10
+  transaction_category:
+    groceries: 0.20
+    dining: 0.15
+    transportation: 0.10
+    shopping: 0.15
+    utilities: 0.10
+    entertainment: 0.10
+    healthcare: 0.05
+    education: 0.05
+    insurance: 0.05
+    other: 0.05
+  loan_type:
+    mortgage: 0.30
+    auto: 0.25
+    personal: 0.20
+    business: 0.15
+    student: 0.10
+  card_type:
+    credit: 0.60
+    debit: 0.30
+    prepaid: 0.10
+  fraud_rate: 0.005  # 0.5% of transactions flagged
+  aml_alert_rate: 0.001  # 0.1% of transactions trigger AML alert
+
+output:
+  base_dir: "./data_output"
+  postgres_dir: "./data_output/postgres"
+  oracle_dir: "./data_output/oracle"
+  sqlserver_dir: "./data_output/sqlserver"
+  azuresql_dir: "./data_output/azuresql"
+  mongodb_dir: "./data_output/mongodb"
+  cassandra_dir: "./data_output/cassandra"
+  fastapi_dir: "./data_output/fastapi"
+  file_format: "parquet"  # or "csv" – we use Parquet for performance
+
+database_connection:
+  postgres:
+    host: localhost
+    port: 5432
+    database: core_banking
+    user: bankadmin
+    password: bankadmin123
+  oracle:
+    host: localhost
+    port: 1521
+    service_name: XEPDB1
+    user: legacy_bank
+    password: oracle123
+  sqlserver:
+    host: localhost
+    port: 1433
+    database: LoanOps
+    user: sa
+    password: MyStrongPass123
+  mongodb:
+    host: localhost
+    port: 27017
+    database: interactions_db
+  cassandra:
+    host: localhost
+    port: 9042
+    keyspace: banking_events
+  azuresql:
+    host: ""
+    database: ""
+    user: ""
+    password: ""

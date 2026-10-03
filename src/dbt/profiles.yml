@@ -1,0 +1,37 @@
+# dbt profile for the Enterprise Banking Data & Analytics Platform.
+# Secrets are never committed: every credential is read from environment
+# variables (or Airflow variables/secrets backend) at run time.
+#
+# Copy the values into your environment (see .env.example) or use a secrets
+# backend. `dbt compile` works with empty placeholders; `dbt run` requires
+# live connections.
+#
+# Usage:  dbt build --target synapse        (Azure Synapse dedicated SQL pool)
+#         dbt build --target databricks     (Delta Lake Gold via dbt-databricks)
+#
+# Adapters: dbt-synapse (dev extras) and dbt-databricks (optional).
+
+enterprise_banking_analytics:
+  target: synapse
+  outputs:
+    synapse:
+      type: synapse
+      driver: "ODBC Driver 17 for SQL Server"
+      host: "{{ env_var('SYNAPSE_HOST', '') }}"
+      port: "{{ env_var('SYNAPSE_PORT', '1433') | as_number }}"
+      database: "{{ env_var('SYNAPSE_DATABASE', 'bankingwarehouse') }}"
+      schema: "{{ env_var('SYNAPSE_SCHEMA', 'dbo') }}"
+      user: "{{ env_var('SYNAPSE_USER', '') }}"
+      password: "{{ env_var('SYNAPSE_PASSWORD', '') }}"
+      threads: 4
+      ssl: false
+      connect_timeout: 10
+
+    databricks:
+      type: databricks
+      catalog: "{{ env_var('DATABRICKS_CATALOG', 'banking') }}"
+      schema: "{{ env_var('DATABRICKS_SCHEMA', 'gold') }}"
+      host: "{{ env_var('DATABRICKS_SERVER_HOST', '') }}"
+      http_path: "{{ env_var('DATABRICKS_HTTP_PATH', '') }}"
+      token: "{{ env_var('DATABRICKS_TOKEN', '') }}"
+      threads: 4

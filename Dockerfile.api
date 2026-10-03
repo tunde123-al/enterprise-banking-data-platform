@@ -1,0 +1,16 @@
+# FastAPI operational microservice (synthetic transaction simulation gateway).
+# Referenced by docker-compose.yml as the `api` service.
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY pyproject.toml setup.py README.md ./
+COPY src ./src
+
+RUN pip install --no-cache-dir "fastapi>=0.100.0" "uvicorn>=0.22.0" "pydantic>=2.0.0" "pydantic-settings>=2.0.0"
+
+EXPOSE 8000
+
+ENV API_ENVIRONMENT=local
+
+CMD ["uvicorn", "src.microservices.fastapi_app.main:app", "--host", "0.0.0.0", "--port", "8000"]

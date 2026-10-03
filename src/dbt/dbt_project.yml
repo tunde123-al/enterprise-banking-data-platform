@@ -1,0 +1,35 @@
+name: 'enterprise_banking_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'enterprise_banking_analytics'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  enterprise_banking_analytics:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    dimensions:
+      +materialized: table
+      +schema: core
+    facts:
+      +materialized: incremental
+      +schema: core
+      +unique_key: transaction_key
+    marts:
+      +materialized: table
+      +schema: marts

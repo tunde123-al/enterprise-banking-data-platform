@@ -1,0 +1,34 @@
+// =============================================================================
+// Power BI Row-Level Security (test personas only - synthetic environment)
+// Implemented as DAX table filters in Power BI Desktop / Service roles.
+// =============================================================================
+
+// RLS role: Branch Manager  (users managed in Power BI, mappings in UserSecurity)
+Branch / Country RLS =
+    VAR UserCountry =
+        LOOKUPVALUE(
+            UserSecurity[Country],
+            UserSecurity[UserEmail],
+            USERPRINCIPALNAME()
+        )
+    RETURN
+        [Country] = UserCountry
+
+// RLS role: AML / Compliance Officer - unrestricted access to alert facts
+AML Officer Access =
+    // No row restriction: compliance officers see all monitoring data and SARs.
+    TRUE
+
+// RLS role: Retail Banking Executive - no unmasked PII, aggregated KPIs only
+Executive Aggregated Access =
+    // Aggregations only; customer identity columns are replaced by hashed keys
+    // in the semantic model. RLS is a defence-in-depth layer on top of masking.
+    TRUE
+
+// =============================================================================
+// Implementation notes:
+// 1. Create a "UserSecurity" table (Country, UserEmail, Role) in the model.
+// 2. Enable "Apply security filter in every row" on each table filter above.
+// 3. Assign roles to test personas:  branch_manager@example.test,
+//    aml_officer@example.test, retail_exec@example.test.
+// =============================================================================

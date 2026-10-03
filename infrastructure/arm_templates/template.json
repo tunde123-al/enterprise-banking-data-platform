@@ -1,0 +1,94 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceNamePrefix": {
+      "type": "string",
+      "metadata": { "description": "Prefix for all resource names, e.g. banking" }
+    },
+    "environment": {
+      "type": "string",
+      "defaultValue": "dev",
+      "allowedValues": ["dev", "test", "prod"],
+      "metadata": { "description": "Deployment environment" }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "metadata": { "description": "Azure region for resources" }
+    }
+  },
+  "variables": {
+    "storageAccountName": "[concat(parameters('resourceNamePrefix'), parameters('environment'), 'datalake')]",
+    "keyVaultName": "[concat('kv-', parameters('resourceNamePrefix'), '-', parameters('environment'))]",
+    "dataFactoryName": "[concat('adf-', parameters('resourceNamePrefix'), '-', parameters('environment'))]",
+    "synapseWorkspaceName": "[concat('syn-', parameters('resourceNamePrefix'), '-', parameters('environment'))]",
+    "containers": ["raw", "bronze", "silver", "gold"]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-04-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "kind": "StorageV2",
+      "sku": { "name": "Standard_LRS" },
+      "properties": { "isHnsEnabled": true },
+      "tags": { "environment": "[parameters('environment')]", "component": "data-lake" }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-04-01",
+      "name": "[concat(variables('storageAccountName'), '/default/', variables('containers')[copyIndex()])]",
+      "copy": {
+        "name": "containersCopy",
+        "count": "[length(variables('containers'))]"
+      },
+      "dependsOn": [
+        "[variables('storageAccountName')]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2023-07-01",
+      "name": "[variables('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": { "family": "A", "name": "standard" },
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [],
+        "enableSoftDelete": true
+      },
+      "tags": { "environment": "[parameters('environment')]", "component": "secrets" }
+    },
+    {
+      "type": "Microsoft.DataFactory/factories",
+      "apiVersion": "2018-06-01",
+      "name": "[variables('dataFactoryName')]",
+      "location": "[parameters('location')]",
+      "identity": { "type": "SystemAssigned" },
+      "tags": { "environment": "[parameters('environment')]", "component": "ingestion" }
+    },
+    {
+      "type": "Microsoft.Synapse/workspaces",
+      "apiVersion": "2021-06-01",
+      "name": "[variables('synapseWorkspaceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "defaultDataLakeStorage": {
+          "accountUrl": "[concat('https://', variables('storageAccountName'), '.dfs.core.windows.net')]"
+        },
+        "sqlAdministratorLogin": "sqladminuser",
+        "sqlAdministratorPassword": "ChangeMe-Placeholder-FromKeyVault"
+      },
+      "identity": { "type": "SystemAssigned" },
+      "tags": { "environment": "[parameters('environment')]", "component": "warehouse" }
+    }
+  ],
+  "outputs": {
+    "storageAccountName": { "type": "string", "value": "[variables('storageAccountName')]" },
+    "keyVaultName": { "type": "string", "value": "[variables('keyVaultName')]" },
+    "dataFactoryName": { "type": "string", "value": "[variables('dataFactoryName')]" },
+    "synapseWorkspaceName": { "type": "string", "value": "[variables('synapseWorkspaceName')]" }
+  }
+}

@@ -1,0 +1,31 @@
+flowchart TB
+    subgraph "GOVERNANCE DOMAINS"
+        G1[Data Ownership<br/>Business Stewards]
+        G2[Data Quality<br/>Validation Rules]
+        G3[Data Lineage<br/>Provenance Tracking]
+        G4[Data Catalog<br/>Metadata Management]
+        G5[Data Classification<br/>Sensitivity Labels]
+        G6[Access Control<br/>Permissions]
+        G7[Data Retention<br/>Lifecycle Policies]
+        G8[Compliance<br/>Regulatory Standards]
+    end
+
+    subgraph "ENFORCEMENT MECHANISMS"
+        E1[Azure Policy<br/>Resource Compliance]
+        E2[RBAC<br/>Role-Based Access]
+        E3[Data Quality Rules<br/>dbt Tests]
+        E4[Lineage Tracking<br/>OpenLineage]
+        E5[Data Catalog<br/>Purview/Manual]
+        E6[Audit Logs<br/>Azure Monitor]
+    end
+
+    subgraph "DATA ASSETS"
+        DA1[Raw Data<br/>Bronze]
+        DA2[Cleansed Data<br/>Silver]
+        DA3[Curated Data<br/>Gold]
+        DA4[Warehouse<br/>Synapse]
+        DA5[Reports<br/>Power BI]
+    end
+
+    G1 & G2 & G3 & G4 & G5 & G6 & G7 & G8 --> E1 & E2 & E3 & E4 & E5 & E6
+    E1 & E2 & E3 & E4 & E5 & E6 --> DA1 & DA2 & DA3 & DA4 & DA5

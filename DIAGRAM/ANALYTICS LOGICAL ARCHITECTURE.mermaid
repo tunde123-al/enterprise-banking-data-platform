@@ -1,0 +1,50 @@
+flowchart TB
+    subgraph "DATA SOURCES"
+        DS1[Synapse<br/>Enterprise Warehouse]
+        DS2[Gold Layer<br/>Delta Tables]
+        DS3[Data Marts<br/>Subject Areas]
+    end
+
+    subgraph "SEMANTIC MODELING"
+        SM1[Power BI<br/>Semantic Models]
+        SM2[DAX Measures<br/>KPIs & Calculations]
+        SM3[Row-Level Security<br/>Data Access Control]
+    end
+
+    subgraph "ANALYTICS & INSIGHTS"
+        A1[Descriptive Analytics<br/>What Happened?]
+        A2[Diagnostic Analytics<br/>Why Did It Happen?]
+        A3[Predictive Analytics<br/>What Will Happen?]
+        A4[Prescriptive Analytics<br/>What Should We Do?]
+    end
+
+    subgraph "VISUALIZATION"
+        V1[Executive Dashboards]
+        V2[Fraud Monitoring]
+        V3[Credit Risk Reports]
+        V4[AML Compliance]
+        V5[Customer 360]
+        V6[Ad-hoc Analysis]
+    end
+
+    subgraph "CONSUMERS"
+        C1[Executives]
+        C2[Risk Managers]
+        C3[Compliance Officers]
+        C4[Branch Managers]
+        C5[Analysts]
+    end
+
+    DS1 & DS2 & DS3 --> SM1
+    SM1 --> SM2
+    SM2 --> SM3
+
+    SM3 --> A1 & A2 & A3 & A4
+    A1 & A2 & A3 & A4 --> V1 & V2 & V3 & V4 & V5 & V6
+
+    V1 --> C1
+    V2 --> C2
+    V3 --> C2
+    V4 --> C3
+    V5 --> C4 & C5
+    V6 --> C5

@@ -1,0 +1,4 @@
+flowchart LR
+ RS[Relational sources] --> ADF[ADF copy]
+ ES[Document/event sources] --> AF[Airflow DAGs]
+ ADF & AF --> LA[Landing + manifest] --> V[Validation gate] --> DBX[Databricks job]

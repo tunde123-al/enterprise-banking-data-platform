@@ -1,0 +1,6 @@
+flowchart LR
+ G[Gold / Synapse star schema] --> SM[Certified semantic model]
+ SM --> D[Dimensions + facts + DAX measures]
+ D --> R[Reports / dashboards]
+ RLS[RLS roles] --> SM
+ PY[Optional Python analysis] --> R

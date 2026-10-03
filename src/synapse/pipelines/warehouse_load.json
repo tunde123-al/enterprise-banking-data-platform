@@ -1,0 +1,74 @@
+{
+  "name": "pipeline_load_gold_to_synapse",
+  "properties": {
+    "description": "Copy curated Gold Delta Lake tables into Synapse Dedicated SQL Pool tables using COPY INTO",
+    "activities": [
+      {
+        "name": "CopyGoldCustomersToDimCustomer",
+        "type": "SqlPoolStoredProcedure",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.00:30:00",
+          "retry": 2
+        },
+        "typeProperties": {
+          "storedProcedureName": "dbo.sp_load_dim_customer_from_gold"
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_synapse_sql_pool",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "CopyGoldTransactionsToFactTransactions",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "CopyGoldCustomersToDimCustomer",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3
+        },
+        "typeProperties": {
+          "source": {
+            "type": "AzureBlobFSSource",
+            "recursive": true
+          },
+          "sink": {
+            "type": "SqlDWSink",
+            "allowCopyCommand": true,
+            "copyCommandSettings": {
+              "defaultValues": [],
+              "additionalOptions": {
+                "MAXERRORS": "100"
+              }
+            },
+            "tableOption": "autoCreate"
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_adls_gold_transactions",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_synapse_fact_transactions",
+            "type": "DatasetReference"
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      "synapse",
+      "gold_to_dw",
+      "warehouse_load"
+    ]
+  }
+}

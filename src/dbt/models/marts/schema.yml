@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: mart_customer_360
+    description: "Curated Customer 360 golden profile mart"
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: wealth_segment
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TIER_1_PRIVATE_WEALTH', 'TIER_2_AFFLUENT', 'TIER_3_MASS_AFFLUENT', 'TIER_4_RETAIL']
+
+  - name: mart_executive_kpis
+    description: "Executive portfolio KPI rollups"
+    columns:
+      - name: country
+        tests:
+          - not_null
+
+  - name: mart_fraud_monitoring
+    description: "Flagged transactions for fraud operations"
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: risk_band
+        tests:
+          - not_null
+
+  - name: mart_credit_risk
+    description: "Loan credit risk assessment mart"
+    columns:
+      - name: loan_id
+        tests:
+          - unique
+          - not_null

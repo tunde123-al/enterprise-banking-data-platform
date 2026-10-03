@@ -1,0 +1,43 @@
+flowchart TB
+    subgraph "USE CASES"
+        UC1[Fraud Risk<br/>Transaction Monitoring]
+        UC2[Credit Risk<br/>Portfolio Assessment]
+        UC3[AML Monitoring<br/>Suspicious Activity]
+        UC4[Customer 360<br/>Unified View]
+        UC5[Executive Analytics<br/>Banking KPIs]
+    end
+
+    subgraph "DATA REQUIREMENTS"
+        DR1[Customer Profile]
+        DR2[Account Details]
+        DR3[Transaction History]
+        DR4[Loan Portfolio]
+        DR5[Card Activity]
+        DR6[Interactions]
+        DR7[Events/Logs]
+    end
+
+    subgraph "ANALYTICAL REQUIREMENTS"
+        AR1[Pattern Detection]
+        AR2[Risk Scoring]
+        AR3[Trend Analysis]
+        AR4[Segmentation]
+        AR5[Alerting]
+    end
+
+    subgraph "OUTPUTS"
+        O1[Risk Scores]
+        O2[Alerts & Cases]
+        O3[Reports & Dashboards]
+        O4[Customer Profiles]
+        O5[Executive Summaries]
+    end
+
+    UC1 --> DR1 & DR2 & DR3 & DR5 & DR7
+    UC2 --> DR1 & DR2 & DR3 & DR4
+    UC3 --> DR1 & DR2 & DR3 & DR7
+    UC4 --> DR1 & DR2 & DR3 & DR4 & DR5 & DR6
+    UC5 --> DR1 & DR2 & DR3 & DR4 & DR5 & DR6 & DR7
+
+    DR1 & DR2 & DR3 & DR4 & DR5 & DR6 & DR7 --> AR1 & AR2 & AR3 & AR4 & AR5
+    AR1 & AR2 & AR3 & AR4 & AR5 --> O1 & O2 & O3 & O4 & O5

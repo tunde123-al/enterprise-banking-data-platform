@@ -1,0 +1,39 @@
+flowchart TB
+    subgraph "IDENTITY & ACCESS"
+        ID1[Microsoft Entra ID<br/>Authentication & Authorization]
+        ID2[Managed Identities<br/>Service Principals]
+        ID3[RBAC<br/>Role-Based Access]
+        ID4[Conditional Access<br/>Policy Enforcement]
+    end
+
+    subgraph "DATA PROTECTION"
+        DP1[Encryption at Rest<br/>Azure Storage Encryption]
+        DP2[Encryption in Transit<br/>TLS/SSL]
+        DP3[Data Masking<br/>Dynamic Data Masking]
+        DP4[Sensitive Data Discovery<br/>Classification]
+    end
+
+    subgraph "NETWORK SECURITY"
+        NS1[VNet<br/>Network Isolation]
+        NS2[Private Endpoints<br/>Private Connectivity]
+        NS3[NSG<br/>Network Security Groups]
+        NS4[Firewall<br/>Azure Firewall]
+    end
+
+    subgraph "SECRETS MANAGEMENT"
+        SM1[Azure Key Vault<br/>Secrets Storage]
+        SM2[Certificate Management]
+        SM3[Connection Strings<br/>Encrypted Storage]
+    end
+
+    subgraph "MONITORING & AUDIT"
+        MA1[Azure Monitor<br/>Logs & Metrics]
+        MA2[Audit Logs<br/>Activity Tracking]
+        MA3[Security Center<br/>Threat Protection]
+        MA4[Alerting<br/>Security Alerts]
+    end
+
+    ID1 --> ID2 & ID3 & ID4
+    DP1 & DP2 & DP3 & DP4 --> NS1 & NS2 & NS3 & NS4
+    SM1 & SM2 & SM3 --> NS1 & NS2 & NS3 & NS4
+    MA1 & MA2 & MA3 & MA4 --> ID1 & DP1 & SM1

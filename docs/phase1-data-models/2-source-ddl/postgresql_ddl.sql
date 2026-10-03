@@ -1,0 +1,4 @@
+CREATE TABLE customers (customer_id VARCHAR(16) PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL, email VARCHAR(254), phone VARCHAR(32), kyc_tier VARCHAR(16), status VARCHAR(16), country CHAR(2));
+CREATE TABLE accounts (account_id VARCHAR(16) PRIMARY KEY, customer_id VARCHAR(16) NOT NULL REFERENCES customers(customer_id), account_type VARCHAR(32) NOT NULL, currency CHAR(3) NOT NULL, balance NUMERIC(18,2) NOT NULL, status VARCHAR(16) NOT NULL);
+CREATE TABLE transactions (transaction_id UUID PRIMARY KEY, account_id VARCHAR(16) NOT NULL REFERENCES accounts(account_id), transaction_ts TIMESTAMPTZ NOT NULL, transaction_type VARCHAR(32) NOT NULL, direction VARCHAR(8) NOT NULL, amount NUMERIC(18,2) NOT NULL, currency CHAR(3) NOT NULL, status VARCHAR(16) NOT NULL, channel VARCHAR(16) NOT NULL);
+CREATE INDEX ix_transactions_account_ts ON transactions(account_id, transaction_ts);

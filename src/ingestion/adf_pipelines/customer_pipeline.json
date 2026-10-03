@@ -1,0 +1,115 @@
+{
+  "name": "pipeline_ingest_customers",
+  "properties": {
+    "description": "Copy customer records from PostgreSQL Core Banking DB to ADLS Gen2 Bronze layer",
+    "activities": [
+      {
+        "name": "LookupLastWatermark",
+        "type": "Lookup",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30
+        },
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderQuery": "SELECT WatermarkValue FROM config.watermarks WHERE TableName = 'customers'"
+          },
+          "dataset": {
+            "referenceName": "ds_sql_watermark",
+            "type": "DatasetReference"
+          }
+        }
+      },
+      {
+        "name": "CopyCustomersToBronze",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "LookupLastWatermark",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 30
+        },
+        "typeProperties": {
+          "source": {
+            "type": "PostgreSqlSource",
+            "query": "SELECT customer_id, first_name, last_name, email, phone, kyc_tier, status, country, created_at FROM core_banking.customers WHERE created_at > '@{activity('LookupLastWatermark').output.firstRow.WatermarkValue}'"
+          },
+          "sink": {
+            "type": "ParquetSink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings"
+            },
+            "formatSettings": {
+              "type": "ParquetWriteSettings"
+            }
+          },
+          "enableStaging": false
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_postgres_customers",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_adls_bronze_customers",
+            "type": "DatasetReference",
+            "parameters": {
+              "directory": "bronze/core_banking/customers"
+            }
+          }
+        ]
+      },
+      {
+        "name": "UpdateWatermark",
+        "type": "SqlServerStoredProcedure",
+        "dependsOn": [
+          {
+            "activity": "CopyCustomersToBronze",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.00:05:00",
+          "retry": 1
+        },
+        "typeProperties": {
+          "storedProcedureName": "config.sp_update_watermark",
+          "storedProcedureParameters": {
+            "TableName": {
+              "value": "customers",
+              "type": "String"
+            },
+            "NewWatermark": {
+              "value": "@utcnow()",
+              "type": "DateTime"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_metadata_db",
+          "type": "LinkedServiceReference"
+        }
+      }
+    ],
+    "annotations": [
+      "ingestion",
+      "bronze",
+      "customers",
+      "core_banking"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+flowchart TB
+    subgraph "GOVERNANCE DOMAINS"
+        GD1[Data Ownership<br/>Accountable Business Units]
+        GD2[Data Stewardship<br/>Data Quality Custodians]
+        GD3[Data Catalog<br/>Metadata Repository]
+        GD4[Data Classification<br/>Sensitivity & Security]
+        GD5[Data Quality<br/>Validation & Monitoring]
+        GD6[Data Lineage<br/>Data Flow Tracking]
+        GD7[Data Retention<br/>Lifecycle Management]
+        GD8[Access Policies<br/>Authorization Rules]
+        GD9[Sensitive Data Handling<br/>Protection Protocols]
+    end
+
+    subgraph "IMPLEMENTATION"
+        IMP1[Azure Purview<br/>Data Catalog & Lineage]
+        IMP2[dbt<br/>Documentation & Tests]
+        IMP3[Azure Policy<br/>Compliance Enforcement]
+        IMP4[RBAC<br/>Access Control]
+        IMP5[Azure Monitor<br/>Audit Logging]
+        IMP6[Manual Processes<br/>Business Stewardship]
+    end
+
+    subgraph "BENEFITS"
+        BEN1[Trusted Data<br/>High Quality & Reliable]
+        BEN2[Discovery<br/>Findable & Understandable]
+        BEN3[Compliance<br/>Regulatory Adherence]
+        BEN4[Security<br/>Data Protection]
+        BEN5[Efficiency<br/>Reduced Data Effort]
+    end
+
+    GD1 & GD2 & GD3 & GD4 & GD5 & GD6 & GD7 & GD8 & GD9 --> IMP1 & IMP2 & IMP3 & IMP4 & IMP5 & IMP6
+    IMP1 & IMP2 & IMP3 & IMP4 & IMP5 & IMP6 --> BEN1 & BEN2 & BEN3 & BEN4 & BEN5

@@ -1,0 +1,5 @@
+flowchart LR
+ OWN[Owners & stewards] --> CAT[Catalog / definitions]
+ CAT --> CL[Classification & access policy] --> DQ[Quality rules] --> LIN[Lineage] --> RET[Retention]
+ DQ --- DATA[Data products]
+ LIN --- DATA

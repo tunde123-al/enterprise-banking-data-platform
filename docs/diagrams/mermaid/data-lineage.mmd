@@ -1,0 +1,3 @@
+flowchart LR
+ S[Source table/event] --> L[Landing manifest] --> B[Bronze Delta] --> SI[Silver Delta] --> G[Gold product] --> M[dbt/Synapse mart] --> P[Power BI measure/report]
+ Q[Quality result + run ID] --- B & SI & G

@@ -1,0 +1,118 @@
+version: 2
+
+sources:
+  - name: lakehouse_silver
+    description: "Silver conformed tables from Delta Lake"
+    tables:
+      - name: customers
+      - name: accounts
+      - name: transactions
+      - name: loans
+      - name: repayments
+      - name: cards
+      - name: merchants
+      - name: devices
+
+models:
+  - name: stg_customers
+    description: "Cleaned customer staging view"
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: email
+        tests:
+          - not_null
+
+  - name: stg_accounts
+    description: "Cleaned account staging view"
+    columns:
+      - name: account_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+  - name: stg_transactions
+    description: "Cleaned transaction staging view"
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: account_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_accounts')
+              field: account_id
+
+  - name: stg_loans
+    description: "Cleaned loan staging view"
+    columns:
+      - name: loan_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+  - name: stg_repayments
+    description: "Cleaned repayment staging view"
+    columns:
+      - name: repayment_id
+        tests:
+          - unique
+          - not_null
+      - name: loan_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_loans')
+              field: loan_id
+
+  - name: stg_cards
+    description: "Cleaned card staging view (masked PAN only)"
+    columns:
+      - name: card_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+  - name: stg_merchants
+    description: "Cleaned merchant staging view"
+    columns:
+      - name: merchant_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_devices
+    description: "Cleaned device staging view"
+    columns:
+      - name: device_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id

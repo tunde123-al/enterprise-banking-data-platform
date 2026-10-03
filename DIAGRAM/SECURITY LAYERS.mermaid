@@ -1,0 +1,48 @@
+flowchart TB
+    subgraph "LAYER 1: IDENTITY"
+        L1A[Microsoft Entra ID<br/>Authentication & Authorization]
+        L1B[Multi-Factor Authentication<br/>Conditional Access]
+        L1C[Managed Identities<br/>Service Principal Authentication]
+    end
+
+    subgraph "LAYER 2: NETWORK"
+        L2A[VNet<br/>Network Isolation]
+        L2B[Private Endpoints<br/>Private Connectivity]
+        L2C[Network Security Groups<br/>Traffic Control]
+        L2D[Azure Firewall<br/>Perimeter Security]
+    end
+
+    subgraph "LAYER 3: DATA"
+        L3A[Encryption at Rest<br/>Storage Encryption]
+        L3B[Encryption in Transit<br/>TLS 1.2+]
+        L3C[Dynamic Data Masking<br/>Sensitive Data]
+        L3D[Data Classification<br/>Labels & Tags]
+    end
+
+    subgraph "LAYER 4: ACCESS"
+        L4A[RBAC<br/>Role-Based Access Control]
+        L4B[Least Privilege<br/>Minimum Permissions]
+        L4C[Just-in-Time Access<br/>Privileged Access]
+        L4D[Row-Level Security<br/>Data Isolation]
+    end
+
+    subgraph "LAYER 5: SECRETS"
+        L5A[Azure Key Vault<br/>Secrets Storage]
+        L5B[Certificate Management]
+        L5C[Connection String Encryption]
+        L5D[API Key Management]
+    end
+
+    subgraph "LAYER 6: AUDIT"
+        L6A[Azure Monitor<br/>Log Collection]
+        L6B[Activity Logs<br/>Resource Changes]
+        L6C[Diagnostic Logs<br/>Service Logs]
+        L6D[Security Alerts<br/>Threat Detection]
+    end
+
+    L1A --> L1B & L1C
+    L2A --> L2B & L2C & L2D
+    L3A --> L3B & L3C & L3D
+    L4A --> L4B & L4C & L4D
+    L5A --> L5B & L5C & L5D
+    L6A --> L6B & L6C & L6D

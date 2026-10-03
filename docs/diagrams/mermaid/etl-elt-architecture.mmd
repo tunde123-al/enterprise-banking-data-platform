@@ -1,0 +1,4 @@
+flowchart LR
+ S[Sources] --> E[Extract & land: ETL movement] --> B[Bronze]
+ B --> T[PySpark ETL: validate/conform] --> SI[Silver]
+ SI --> ELT[dbt/Spark SQL ELT: marts] --> W[Synapse/Gold] --> BI[Power BI]

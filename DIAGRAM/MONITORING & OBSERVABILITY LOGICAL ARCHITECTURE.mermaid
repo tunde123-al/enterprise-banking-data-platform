@@ -1,0 +1,36 @@
+flowchart TB
+    subgraph "MONITORING SOURCES"
+        MS1[ADF Pipelines<br/>Activity Status]
+        MS2[Airflow DAGs<br/>Task Execution]
+        MS3[Databricks Jobs<br/>Cluster Performance]
+        MS4[Synapse Queries<br/>DW Performance]
+        MS5[ADLS Gen2<br/>Storage Metrics]
+        MS6[Power BI<br/>Report Usage]
+        MS7[Data Quality<br/>dbt Test Results]
+    end
+
+    subgraph "METRICS CATEGORIES"
+        MC1[Pipeline Metrics<br/>Duration, Records, Failures]
+        MC2[Compute Metrics<br/>CPU, Memory, Cores]
+        MC3[Storage Metrics<br/>Size, IOPS, Latency]
+        MC4[Quality Metrics<br/>Pass, Fail, Trends]
+        MC5[Business Metrics<br/>Volume, Value, Counts]
+    end
+
+    subgraph "OBSERVABILITY TOOLS"
+        OT1[Azure Monitor<br/>Log Analytics]
+        OT2[Application Insights<br/>Performance]
+        OT3[Custom Dashboards<br/>Power BI]
+        OT4[Alerts<br/>Action Groups]
+    end
+
+    subgraph "OUTPUTS"
+        O1[Operational Dashboards<br/>Pipeline Health]
+        O2[Data Quality Dashboards<br/>Validation Status]
+        O3[SLA Dashboards<br/>Performance vs Targets]
+        O4[Alert Notifications<br/>Email, Teams, SMS]
+    end
+
+    MS1 & MS2 & MS3 & MS4 & MS5 & MS6 & MS7 --> MC1 & MC2 & MC3 & MC4 & MC5
+    MC1 & MC2 & MC3 & MC4 & MC5 --> OT1 & OT2 & OT3 & OT4
+    OT1 & OT2 & OT3 & OT4 --> O1 & O2 & O3 & O4

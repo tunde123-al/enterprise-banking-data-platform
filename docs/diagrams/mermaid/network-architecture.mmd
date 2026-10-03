@@ -1,0 +1,8 @@
+flowchart LR
+ U[Entra users] --> C[Azure control plane]
+ subgraph VNet
+  IR[ADF integration] --> PE[Private endpoints]
+  DB[Databricks subnet] --> PE
+ end
+ PE --> DS[ADLS • Key Vault • SQL • Synapse]
+ PBI[Power BI service] --> DS

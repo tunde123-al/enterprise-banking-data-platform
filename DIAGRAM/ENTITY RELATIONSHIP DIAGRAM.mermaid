@@ -1,0 +1,198 @@
+erDiagram
+    CUSTOMER ||--o{ ACCOUNT : has
+    CUSTOMER ||--o{ LOAN : applies_for
+    CUSTOMER ||--o{ CARD : owns
+    CUSTOMER ||--o{ CUSTOMER_INTERACTION : engages_in
+    CUSTOMER ||--o{ DEVICE : uses
+    ACCOUNT ||--o{ TRANSACTION : participates_in
+    ACCOUNT ||--o{ CARD : linked_to
+    ACCOUNT ||--o{ LOAN : funds
+    TRANSACTION ||--o{ FRAUD_EVENT : triggers
+    TRANSACTION ||--o{ AML_ALERT : triggers
+    LOAN ||--o{ LOAN_REPAYMENT : has
+    MERCHANT ||--o{ TRANSACTION : processes
+    BRANCH ||--o{ ACCOUNT : services
+    BRANCH ||--o{ LOAN : processes
+
+    CUSTOMER {
+        int customer_id PK
+        string first_name
+        string last_name
+        string email
+        string phone
+        date date_of_birth
+        string ssn_hash
+        string address
+        string city
+        string state
+        string zip_code
+        string country
+        date created_date
+        date updated_date
+        boolean is_active
+    }
+
+    ACCOUNT {
+        int account_id PK
+        int customer_id FK
+        int branch_id FK
+        string account_number
+        string account_type
+        string currency
+        decimal balance
+        decimal available_balance
+        date opened_date
+        date closed_date
+        string status
+        date created_date
+        date updated_date
+    }
+
+    TRANSACTION {
+        int transaction_id PK
+        int account_id FK
+        int merchant_id FK
+        string transaction_reference
+        decimal amount
+        string currency
+        string transaction_type
+        string transaction_category
+        timestamp transaction_date
+        decimal balance_after
+        string status
+        string description
+        decimal fee
+        decimal tax
+        date created_date
+        date updated_date
+    }
+
+    LOAN {
+        int loan_id PK
+        int customer_id FK
+        int account_id FK
+        int branch_id FK
+        string loan_number
+        string loan_type
+        decimal principal_amount
+        decimal interest_rate
+        decimal current_balance
+        int term_months
+        date origination_date
+        date maturity_date
+        string status
+        string risk_rating
+        date created_date
+        date updated_date
+    }
+
+    LOAN_REPAYMENT {
+        int repayment_id PK
+        int loan_id FK
+        string repayment_reference
+        decimal amount
+        decimal principal_paid
+        decimal interest_paid
+        date repayment_date
+        string status
+        string payment_method
+        date created_date
+    }
+
+    CARD {
+        int card_id PK
+        int customer_id FK
+        int account_id FK
+        string card_number_hash
+        string card_type
+        string card_brand
+        date issue_date
+        date expiry_date
+        date created_date
+        date updated_date
+    }
+
+    MERCHANT {
+        int merchant_id PK
+        string merchant_name
+        string merchant_code
+        string category_code
+        string category_name
+        string address
+        string city
+        string state
+        string country
+        date created_date
+        date updated_date
+    }
+
+    CUSTOMER_INTERACTION {
+        int interaction_id PK
+        int customer_id FK
+        string interaction_type
+        string channel
+        timestamp interaction_date
+        string description
+        string outcome
+        string severity
+        string category
+        date created_date
+    }
+
+    DEVICE {
+        int device_id PK
+        int customer_id FK
+        string device_type
+        string operating_system
+        string browser
+        string ip_address_hash
+        string device_fingerprint_hash
+        timestamp first_seen
+        timestamp last_seen
+        date created_date
+    }
+
+    FRAUD_EVENT {
+        int fraud_event_id PK
+        int transaction_id FK
+        string event_reference
+        string fraud_type
+        decimal risk_score
+        string status
+        timestamp detection_date
+        timestamp investigation_date
+        timestamp resolution_date
+        string resolution_notes
+        date created_date
+        date updated_date
+    }
+
+    AML_ALERT {
+        int aml_alert_id PK
+        int transaction_id FK
+        string alert_reference
+        string alert_type
+        string severity
+        decimal alert_score
+        string status
+        timestamp detection_date
+        timestamp investigation_date
+        timestamp resolution_date
+        string resolution_notes
+        date created_date
+        date updated_date
+    }
+
+    BRANCH {
+        int branch_id PK
+        string branch_code
+        string branch_name
+        string address
+        string city
+        string state
+        string zip_code
+        string country
+        string region
+        date created_date
+        date updated_date
+    }

@@ -1,0 +1,8 @@
+﻿postgres:15 633MB
+cassandra:4 504MB
+mcr.microsoft.com/mssql/server:2022-latest 2.34GB
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          3         0         3.477GB   3.477GB (99%)
+Containers      0         0         0B        0B
+Local Volumes   0         0         0B        0B
+Build Cache     0         0         0B        0B

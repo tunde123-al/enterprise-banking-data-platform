@@ -1,0 +1,6 @@
+flowchart TB
+ ID[Entra authentication] --> RBAC[RBAC / ACL / RLS]
+ KV[Key Vault + managed identity] --> PL[Data platform]
+ NET[Private endpoints + network rules] --> PL
+ ENC[TLS + encryption at rest] --> PL
+ PL --> AUD[Audit logs + monitoring]

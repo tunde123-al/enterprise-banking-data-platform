@@ -1,0 +1,43 @@
+flowchart LR
+    subgraph "SOURCE SYSTEMS"
+        S1[PostgreSQL<br/>Customer, Account, Transaction]
+        S2[Oracle<br/>Historical Data]
+        S3[SQL Server<br/>Loan, Branch]
+        S4[Azure SQL<br/>Modern App Data]
+        S5[MongoDB<br/>Interactions]
+        S6[Cassandra<br/>Events]
+    end
+
+    subgraph "BRONZE"
+        B1[Raw Tables<br/>Parquet Files]
+    end
+
+    subgraph "SILVER"
+        SL1[Cleansed Tables<br/>Delta Tables]
+    end
+
+    subgraph "GOLD"
+        G1[Curated Tables<br/>Delta Tables]
+    end
+
+    subgraph "WAREHOUSE"
+        W1[Fact Tables<br/>Dimension Tables]
+    end
+
+    subgraph "MARTS"
+        M1[Fraud Mart]
+        M2[Credit Mart]
+        M3[AML Mart]
+        M4[Customer Mart]
+    end
+
+    subgraph "REPORTS"
+        R1[Power BI<br/>Dashboards]
+    end
+
+    S1 & S2 & S3 & S4 & S5 & S6 -->|ADF/Airflow| B1
+    B1 -->|Databricks| SL1
+    SL1 -->|Databricks| G1
+    G1 -->|dbt| W1
+    W1 -->|dbt| M1 & M2 & M3 & M4
+    M1 & M2 & M3 & M4 -->|Power BI| R1

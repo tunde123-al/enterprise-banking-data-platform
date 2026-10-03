@@ -1,0 +1,6 @@
+flowchart LR
+ G[Private Git repository] --> CI[CI: lint/test/scan]
+ CI --> CD[CD: approved deployment]
+ CD --> IAC[Terraform or ARM] --> AZ[Azure resources]
+ CD --> AS[ADF/Databricks/dbt/SQL assets]
+ AZ & AS --> MON[Monitor + runbooks]

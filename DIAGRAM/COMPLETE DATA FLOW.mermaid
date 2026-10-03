@@ -1,0 +1,54 @@
+flowchart TB
+    subgraph "PHASE 1: DATA GENERATION"
+        G1[Python Faker<br/>Data Generation]
+        G2[PostgreSQL<br/>Core Banking]
+        G3[Oracle<br/>Legacy Banking]
+        G4[SQL Server<br/>Loan Operations]
+        G5[Azure SQL<br/>Modern Banking App]
+        G6[MongoDB<br/>Interactions]
+        G7[Cassandra<br/>Events]
+        G8[FastAPI<br/>Transaction Simulator]
+    end
+
+    subgraph "PHASE 2: DATA INGESTION"
+        I1[Azure Data Factory<br/>SQL Sources]
+        I2[Apache Airflow<br/>NoSQL Sources]
+        I3[Event Hub<br/>Real-Time Data]
+    end
+
+    subgraph "PHASE 3: DATA LAKE"
+        L1[ADLS Gen2 - Bronze<br/>Raw Data Storage]
+        L2[Delta Lake - Silver<br/>Cleansed Data]
+        L3[Delta Lake - Gold<br/>Curated Data]
+    end
+
+    subgraph "PHASE 4: PROCESSING"
+        P1[Databricks<br/>Bronze → Silver<br/>Cleansing & Normalization]
+        P2[Databricks<br/>Silver → Gold<br/>Enrichment & Aggregation]
+        P3[dbt<br/>Gold → Warehouse<br/>Star Schema Modeling]
+    end
+
+    subgraph "PHASE 5: WAREHOUSE"
+        W1[Azure Synapse<br/>Enterprise Warehouse]
+        W2[Data Marts<br/>Fraud, Credit, AML, Customer]
+    end
+
+    subgraph "PHASE 6: ANALYTICS"
+        A1[Power BI<br/>Semantic Modeling]
+        A2[Power BI<br/>Dashboards & Reports]
+        A3[Executive View<br/>Banking Insights]
+    end
+
+    G1 --> G2 & G3 & G4 & G5 & G6 & G7
+    G8 --> G5 & G7
+
+    G2 & G3 & G4 & G5 --> I1
+    G5 & G6 & G7 --> I2
+    G7 & G8 --> I3
+
+    I1 & I2 & I3 --> L1
+    L1 --> P1 --> L2
+    L2 --> P2 --> L3
+    L3 --> P3 --> W1
+    W1 --> W2
+    W2 --> A1 --> A2 --> A3

@@ -1,0 +1,4 @@
+flowchart LR
+ S[(Operational stores)] --> O[ADF batch / Airflow events] --> B[ADLS Bronze]
+ B --> P[Databricks PySpark] --> SI[Delta Silver] --> GO[Delta Gold]
+ GO --> DBT[dbt + Synapse] --> BI[Power BI]

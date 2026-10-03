@@ -1,0 +1,212 @@
+// =============================================================================
+// Power BI semantic model - certified DAX measures
+// Target: Gold / Synapse marts (mart_executive_kpis, mart_fraud_monitoring,
+//         mart_aml_monitoring, mart_credit_risk, mart_customer_360)
+// =============================================================================
+
+// ---- Executive banking -----------------------------------------------------
+Total Deposits = SUM(mart_executive_kpis[TotalDeposits])
+
+Total Transaction Volume = SUM(mart_executive_kpis[TotalTransactionVolume])
+
+Total Transaction Count = SUM(mart_executive_kpis[TotalTransactionCount])
+
+Total Loans = SUM(mart_executive_kpis[TotalLoans])
+
+Total Loan Principal = SUM(mart_executive_kpis[TotalLoanPrincipal])
+
+Average Deposits per Customer =
+    DIVIDE([Total Deposits], [Total Customers])
+
+Total Customers = SUM(mart_executive_kpis[CustomerCount])
+
+// ---- Fraud risk ------------------------------------------------------------
+Fraud Alert Count = COUNTROWS(mart_fraud_monitoring)
+
+High Risk Fraud Alerts =
+    CALCULATE(
+        COUNTROWS(mart_fraud_monitoring),
+        mart_fraud_monitoring[RiskBand] = "HIGH_ALERT"
+    )
+
+Average Fraud Score = AVERAGE(mart_fraud_monitoring[FraudScore])
+
+Fraud Exposure (USD) =
+    CALCULATE(
+        SUM(mart_fraud_monitoring[Amount]),
+        mart_fraud_monitoring[FraudScore] >= 0.40
+    )
+
+// ---- AML monitoring --------------------------------------------------------
+AML Alert Count = COUNTROWS(mart_aml_monitoring)
+
+SAR Recommended Count =
+    CALCULATE(COUNTROWS(mart_aml_monitoring), mart_aml_monitoring[SARRecommended] = 1)
+
+AML Alerts by Rule = DISTINCTCOUNT(mart_aml_monitoring[AMLRule])
+
+Average AML Risk Score = AVERAGE(mart_aml_monitoring[RiskScore])
+
+// ---- Credit risk -----------------------------------------------------------
+Portfolio Expected Loss (USD) =
+    SUMX(
+        mart_credit_risk,
+        mart_credit_risk[PrincipalAmount]
+            * 0.05   // proxy PD floor aligned with the Gold credit-risk model
+            * 0.45   // loss given default used by the Databricks engine
+    )
+
+High Risk Portfolio Share =
+    DIVIDE(
+        CALCULATE(
+            COUNTROWS(mart_credit_risk),
+            mart_credit_risk[RiskRatingBand] IN {"HIGH_RISK_CCC", "DEFAULT"}
+        ),
+        COUNTROWS(mart_credit_risk)
+    )
+
+// ---- Customer 360 ----------------------------------------------------------
+Total Relationship Value =
+    SUM(mart_customer_360[TotalDepositBalance])
+        + SUM(mart_customer_360[LifetimeTransactionVolume])
+
+Active Customers =
+    CALCULATE(
+        DISTINCTCOUNT(mart_customer_360[CustomerID]),
+        mart_customer_360[LastSeenAt] >= TODAY() - 365
+    )
+
+Wealth Segment Mix =
+    DIVIDE(
+        CALCULATE(DISTINCTCOUNT(mart_customer_360[CustomerID]),
+                  mart_customer_360[WealthSegment] = "TIER_1_PRIVATE_WEALTH"),
+        DISTINCTCOUNT(mart_customer_360[CustomerID])
+    )
+// ==============================================================================
+// Power BI Enterprise Banking DAX Measures Library
+// Core KPIs for Executive, Fraud, Credit Risk, AML, and Customer 360 Dashboards
+// ==============================================================================
+
+// ------------------------------------------------------------------------------
+// 1. Executive Banking & Financial Measures
+// ------------------------------------------------------------------------------
+
+Total Transaction Volume := 
+SUM(Fact_Transactions[Amount])
+
+Total Transaction Count := 
+COUNTROWS(Fact_Transactions)
+
+Average Ticket Size := 
+DIVIDE([Total Transaction Volume], [Total Transaction Count], 0)
+
+Total Fee Revenue := 
+SUM(Fact_Transactions[Fee])
+
+Total Deposit Portfolio := 
+SUM(Fact_Daily_Balances[ClosingBalance])
+
+Customer Count := 
+DISTINCTCOUNT(Dim_Customer[CustomerID])
+
+Accounts Per Customer := 
+DIVIDE(DISTINCTCOUNT(Dim_Account[AccountID]), [Customer Count], 0)
+
+// Period-over-Period Growth
+Volume Previous Month := 
+CALCULATE(
+    [Total Transaction Volume],
+    DATEADD(Dim_Date[FullDate], -1, MONTH)
+)
+
+MoM Volume Growth % := 
+DIVIDE([Total Transaction Volume] - [Volume Previous Month], [Volume Previous Month], 0)
+
+// ------------------------------------------------------------------------------
+// 2. Fraud Risk Monitoring Measures
+// ------------------------------------------------------------------------------
+
+Total Fraud Alerts := 
+COUNTROWS(Fact_Fraud_Alerts)
+
+Critical Fraud Alerts := 
+CALCULATE(
+    [Total Fraud Alerts],
+    Fact_Fraud_Alerts[RiskBand] = "CRITICAL"
+)
+
+Fraud Alert Rate % := 
+DIVIDE([Total Fraud Alerts], [Total Transaction Count], 0)
+
+Average Fraud Score := 
+AVERAGE(Fact_Fraud_Alerts[FraudScore])
+
+Fraud Loss Exposure := 
+CALCULATE(
+    SUM(Fact_Transactions[Amount]),
+    USERELATIONSHIP(Fact_Fraud_Alerts[TransactionKey], Fact_Transactions[TransactionKey]),
+    Fact_Fraud_Alerts[RiskBand] IN {"CRITICAL", "HIGH"}
+)
+
+// ------------------------------------------------------------------------------
+// 3. Credit Risk & Lending Measures
+// ------------------------------------------------------------------------------
+
+Total Loan Exposure := 
+SUM(Fact_Loans[PrincipalAmount])
+
+Active Loans Count := 
+CALCULATE(
+    COUNTROWS(Fact_Loans),
+    Fact_Loans[LoanStatus] = "active"
+)
+
+Defaulted Loans Count := 
+CALCULATE(
+    COUNTROWS(Fact_Loans),
+    Fact_Loans[LoanStatus] = "defaulted"
+)
+
+Portfolio Default Rate % := 
+DIVIDE([Defaulted Loans Count], COUNTROWS(Fact_Loans), 0)
+
+Weighted Avg Probability of Default := 
+DIVIDE(
+    SUMX(Fact_Loans, Fact_Loans[ProbabilityOfDefault] * Fact_Loans[PrincipalAmount]),
+    [Total Loan Exposure],
+    0
+)
+
+Portfolio Expected Loss := 
+SUM(Fact_Loans[ExpectedLoss])
+
+Expected Loss Ratio % := 
+DIVIDE([Portfolio Expected Loss], [Total Loan Exposure], 0)
+
+// ------------------------------------------------------------------------------
+// 4. AML Compliance Measures
+// ------------------------------------------------------------------------------
+
+Total AML Alerts := 
+COUNTROWS(Fact_AML_Alerts)
+
+SAR Recommendations Count := 
+CALCULATE(
+    [Total AML Alerts],
+    Fact_AML_Alerts[SARRecommended] = TRUE
+)
+
+Structuring Alerts Count := 
+CALCULATE(
+    [Total AML Alerts],
+    Fact_AML_Alerts[RuleTriggered] = "AML_STRUCTURING_SUB_10K"
+)
+
+High Value Alerts Count := 
+CALCULATE(
+    [Total AML Alerts],
+    Fact_AML_Alerts[RuleTriggered] = "AML_HIGH_VALUE_CTR"
+)
+
+SAR Conversion Rate % := 
+DIVIDE([SAR Recommendations Count], [Total AML Alerts], 0)
