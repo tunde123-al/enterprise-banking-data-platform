@@ -29,5 +29,6 @@ def test_generate_all_smoke(tmp_path):
 def test_fastapi_app_has_health_endpoint():
     from src.microservices.fastapi_app.main import app
 
-    paths = {route.path for route in app.routes}
-    assert "/health" in paths
+    # The OpenAPI schema lists every served path regardless of how FastAPI
+    # represents included routers internally (app.routes entries vary by version).
+    assert "/health" in app.openapi()["paths"]

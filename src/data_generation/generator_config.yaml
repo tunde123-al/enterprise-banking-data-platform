@@ -70,25 +70,24 @@ output:
   fastapi_dir: "./data_output/fastapi"
   file_format: "parquet"  # or "csv" – we use Parquet for performance
 
+# Passwords are never stored here; loaders read them from the environment
+# (see .env.example).
 database_connection:
   postgres:
     host: localhost
     port: 5432
     database: core_banking
     user: bankadmin
-    password: bankadmin123
   oracle:
     host: localhost
     port: 1521
     service_name: XEPDB1
     user: legacy_bank
-    password: oracle123
   sqlserver:
     host: localhost
     port: 1433
     database: LoanOps
     user: sa
-    password: MyStrongPass123
   mongodb:
     host: localhost
     port: 27017
@@ -101,4 +100,3 @@ database_connection:
     host: ""
     database: ""
     user: ""
-    password: ""

@@ -3,8 +3,12 @@
 # Runs the five synthetic source systems, Apache Airflow and the FastAPI
 # operational microservice on Docker Desktop.
 #
+# Credentials are read from .env (never committed). Create it first:
+#   cp .env.example .env      # then set the *_PASSWORD values
+#
 # Usage (from repository root):
 #   docker compose up -d --build
+#   docker compose up -d postgres mongodb   # start a subset on small machines
 #   docker compose ps
 #   docker compose logs -f airflow
 # =============================================================================
@@ -14,9 +18,9 @@ services:
     image: postgres:15
     container_name: postgres-bank
     environment:
-      POSTGRES_DB: core_banking
-      POSTGRES_USER: bankadmin
-      POSTGRES_PASSWORD: bankadmin123
+      POSTGRES_DB: ${POSTGRES_DB:-core_banking}
+      POSTGRES_USER: ${POSTGRES_USER:-bankadmin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
     ports:
       - "5432:5432"
     volumes:
@@ -31,7 +35,7 @@ services:
     image: gvenzl/oracle-free:23-slim
     container_name: oracle-bank
     environment:
-      ORACLE_PASSWORD: oracle123
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?Set ORACLE_PASSWORD in .env (see .env.example)}
       ORACLE_DATABASE: XEPDB1
     ports:
       - "1521:1521"
@@ -46,7 +50,7 @@ services:
     container_name: sqlserver-bank
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "MyStrongPass123"
+      MSSQL_SA_PASSWORD: ${SQLSERVER_PASSWORD:?Set SQLSERVER_PASSWORD in .env (see .env.example)}
     ports:
       - "1433:1433"
     volumes:

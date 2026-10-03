@@ -44,4 +44,4 @@ jobs:
 
       - name: FastAPI health check (smoke)
         run: |
-          python -c "from src.microservices.fastapi_app.main import app; assert any(r.path == '/health' for r in app.routes)"
+          python -c "from src.microservices.fastapi_app.main import app; assert '/health' in app.openapi()['paths']"

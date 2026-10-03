@@ -16,6 +16,10 @@
       "type": "string",
       "defaultValue": "eastus",
       "metadata": { "description": "Azure region for resources" }
+    },
+    "sqlAdministratorLoginPassword": {
+      "type": "securestring",
+      "metadata": { "description": "Synapse SQL administrator password. Supply at deployment time (prompt, pipeline secret or Key Vault reference); never commit a value." }
     }
   },
   "variables": {
@@ -79,7 +83,7 @@
           "accountUrl": "[concat('https://', variables('storageAccountName'), '.dfs.core.windows.net')]"
         },
         "sqlAdministratorLogin": "sqladminuser",
-        "sqlAdministratorPassword": "ChangeMe-Placeholder-FromKeyVault"
+        "sqlAdministratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]"
       },
       "identity": { "type": "SystemAssigned" },
       "tags": { "environment": "[parameters('environment')]", "component": "warehouse" }

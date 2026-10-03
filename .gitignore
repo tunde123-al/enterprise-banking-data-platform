@@ -29,10 +29,20 @@ htmlcov/
 *.tfstate
 *.tfstate.*
 
-# IDE / OS
+build/
+dist/
+
+# IDE / OS / AI-assistant tooling
 .vscode/
 .idea/
+.qodo/
 .DS_Store
 
-# Stale inventory artifact (regenerate with: dir /b /s > _filelist.txt)
-_filelist.txt
+# Local diagnostics and command output captured while debugging the Docker
+# stack. Root-anchored so they cannot hide source or documentation.
+/_*.txt
+/d[0-9].txt
+/diag*.txt
+/poll*.txt
+/wherecheck.txt
+*.log

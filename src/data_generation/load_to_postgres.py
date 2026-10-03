@@ -16,7 +16,8 @@ def get_connection(config=None):
     port = os.environ.get("POSTGRES_PORT", "5432")
     db = os.environ.get("POSTGRES_DB", "core_banking")
     user = os.environ.get("POSTGRES_USER", "bankadmin")
-    password = os.environ.get("POSTGRES_PASSWORD", "bankadmin123")
+    # The password comes from the environment only (see .env.example).
+    password = os.environ["POSTGRES_PASSWORD"]
 
     if config and "database_connection" in config and "postgres" in config["database_connection"]:
         pg_cfg = config["database_connection"]["postgres"]
@@ -24,7 +25,6 @@ def get_connection(config=None):
         port = pg_cfg.get("port", port)
         db = pg_cfg.get("database", db)
         user = pg_cfg.get("user", user)
-        password = pg_cfg.get("password", password)
 
     return psycopg2.connect(
         host=host,

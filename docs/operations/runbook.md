@@ -1,6 +1,9 @@
 # Data pipeline runbook
 
 ## 1. Before you start
+- Create the environment file once: `cp .env.example .env`, then set the three database
+  passwords. Docker Compose will not start without them.
+- Install the loader drivers: `pip install -e ".[loaders]"`.
 - Confirm the repository is on the expected Git revision and the environment file is loaded:
   `set -a; source .env; set +a` (Windows PowerShell: environment comes from the IDE / `docker compose`).
 - Confirm local source databases are healthy: `docker compose ps` (repository root).

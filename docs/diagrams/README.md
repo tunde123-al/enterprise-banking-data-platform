@@ -19,3 +19,13 @@ Each major view has editable Mermaid (`mermaid/`) and draw.io XML (`drawio/`) so
 | Deployment | [source](mermaid/deployment-architecture.mmd) | [XML](drawio/deployment-architecture.drawio) |
 | Disaster recovery | [source](mermaid/disaster-recovery-architecture.mmd) | [XML](drawio/disaster-recovery-architecture.drawio) |
 | End-to-end | [source](mermaid/end-to-end-architecture.mmd) | [XML](drawio/end-to-end-architecture.drawio) |
+
+## Presentation diagrams
+
+The repository-root [`DIAGRAM/`](../../DIAGRAM) folder is a separate set, not a copy of this
+one. It holds the detailed, presentation-ready views: rendered `.svg` images that display
+directly on GitHub, plus the fuller `.mermaid` sources for the logical architectures
+(analytics, governance, lineage, security, monitoring, integration patterns, ERD, data flow).
+
+Use this folder (`docs/diagrams/`) for the compact, editable view per architecture layer and
+`DIAGRAM/` for the detailed figures.
